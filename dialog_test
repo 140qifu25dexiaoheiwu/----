@@ -1,0 +1,156 @@
+ <script language="javascript" type="text/javascript">
+
+
+    function Button1_onclick() {
+        var url = 'http://www.baidu.com';
+        var dialog = new Dialog(url, '运力信息', 700, 500);
+        dialog.show();
+    }
+
+ 
+
+ 
+
+    function openNewDiv(_id) {
+        var mask = document.getElementById('mask');
+        if (mask) document.body.removeChild(mask);
+        //mask遮罩层
+        var newMask = document.createElement("div");
+        newMask.id = 'mask';
+        newMask.style.position = "absolute";
+        newMask.style.zIndex = "1";
+        _scrollWidth = Math.max(document.body.scrollWidth, document.documentElement.scrollWidth);
+        _scrollHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        newMask.style.width = _scrollWidth + "px";
+        newMask.style.height = _scrollHeight + "px";
+        newMask.style.top = "0px";
+        newMask.style.left = "0px";
+        newMask.style.background = "#ffffff";
+        newMask.style.filter = "alpha(opacity=40)";
+        newMask.style.opacity = "0.40";
+        document.body.appendChild(newMask);
+        document.documentElement.style.overflow = "hidden";
+        //新弹出层
+        var newDiv = document.getElementById(_id);
+        newDiv.style.position = "absolute";
+        newDiv.style.zIndex = "9999";
+        newDiv.style.display = "";
+        newDiv.style.top = document.documentElement.scrollTop + (document.documentElement.clientHeight / 2 - newDiv.offsetHeight / 2) + "px";
+        newDiv.style.left = document.documentElement.scrollLeft + (document.documentElement.clientWidth / 2 - newDiv.offsetWidth / 2) + "px";
+    }
+    //关闭新图层和mask遮罩层
+    function closeNewDiv(_id) {
+        var newDiv = document.getElementById(_id);
+        if (newDiv) {
+            newDiv.style.display = "none";
+        }
+        var mask = document.getElementById('mask');
+        if (mask) {
+            document.body.removeChild(mask);
+        }
+        document.documentElement.style.overflow = "auto";
+    }
+
+ 
+
+ 
+
+    function Dialog(url, t, w, h) {
+        var mask = document.createElement("div");
+        mask.style.position = "absolute";
+        with (mask.style) {
+            width = Math.max(document.body.clientWidth, document.documentElement.clientWidth) + "px";
+            height = Math.max(document.body.clientHeight, document.documentElement.clientHeight) + "px";
+            top = "10px";
+            left = "10px";
+            background = "#ffffff";
+            filter = "alpha(opacity=40)";
+            opacity = "0.40";
+            zIndex = "900";
+        }
+        document.body.appendChild(mask);
+        this.mask = mask;
+
+        var massage_box = document.createElement("div");
+        massage_box.style.cssText = "filter:dropshadow(color=#666666,offx=3,offy=3,positive=2);z-index:999; visibility:hidden;";
+        with (massage_box.style) {
+            position = 'absolute';
+            width = w + "px";
+            height = h + "px";
+            top = "0px"; //  document.documentElement.scrollTop + (document.documentElement.clientHeight / 2 - h / 2) + "px";
+            left = "0px"; // document.documentElement.scrollLeft + (document.documentElement.clientWidth / 2 - w / 2) + "px";
+        }
+        document.body.appendChild(massage_box);
+        this.massage_box = massage_box;
+
+        var massage = document.createElement("div");
+        massage.style.cssText = "border:#036 solid; border-width:1 1 3 1; width:95%; height:95%; background:#fff; color:#036; font-size:12px; line-height:150%";
+        massage_box.appendChild(massage);
+        this.massage = massage;
+
+
+        this.pX = 0;
+        this.pY = 0;
+
+        var header = document.createElement("div");
+        header.style.cssText = "background:#515150; height:10%; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px; padding:3 5 0 5; color:#fff";
+        massage.appendChild(header);
+
+
+        var title = document.createElement("div");
+        title.style.cssText += "display:inline; width:90%; position:absolute";
+        title.innerHTML = t;
+        header.appendChild(title);
+        title.O = this;
+        title.onmousedown = function () {
+
+            this.O.massage_box.setCapture()
+            this.O.pX = event.x - this.O.massage_box.style.pixelLeft;
+            this.O.pY = event.y - this.O.massage_box.style.pixelTop;
+            this.O.moving = true;
+        };
+
+        var btnClose = document.createElement("span");
+        btnClose.style.cssText = "float:right;display:inline; cursor:hand;z-index:999;";
+        btnClose.innerHTML = '×';
+        header.appendChild(btnClose);
+        btnClose.O = this;
+        btnClose.onclick = function () {
+            this.O.close();
+        };
+
+        this.moveing = false;
+        document.dialog = this;
+        document.onmouseup = function () {
+            if (document.dialog.moving) {
+                document.dialog.massage_box.releaseCapture();
+            }
+            document.dialog.moving = false;
+        };
+        document.onmousemove = function () {
+            if (document.dialog.moving) {
+                document.dialog.massage_box.style.left = event.x - document.dialog.pX;
+                document.dialog.massage_box.style.top = event.y - document.dialog.pY;
+            }
+        };
+
+
+        var iframe = document.createElement("iframe");
+        iframe.style.cssText = "overflow: hidden;width:100%;height:100%";
+        iframe.frameborder = 'no';
+        iframe.scrolling = "no"
+        iframe.src = url;
+        massage.appendChild(iframe);
+        this.iframe = iframe;
+        this.show = function () {
+            this.mask.style.visibility = 'visible';
+            this.massage_box.style.visibility = 'visible';
+        };
+        this.close = function () {
+            this.massage_box.style.visibility = 'hidden';
+            this.mask.style.visibility = 'hidden';
+            document.body.removeChild(this.massage_box);
+            document.body.removeChild(this.mask);
+        };
+    }    
+ </script>
